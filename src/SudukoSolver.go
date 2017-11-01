@@ -7,9 +7,17 @@ import (
 	"log"
 	"strconv"
 	"strings"
+	"time"
 )
 
+/**
+Description: main runs the entire program, including reading in a game file,
+				solving the game, and printing the outputs.
+Arguments: None
+Returns: Nothing
+*/
 func main() {
+	// This section of code reads in a file and produces a 9 x 9 integer matrix
 	arguments := os.Args[1:]
 	numArguments := len(arguments)
 	if numArguments != 1 {
@@ -25,26 +33,48 @@ func main() {
 		fmt.Printf("Encountered an error, exiting the program: %s\n", err)
 		os.Exit(1)
 	}
-	printMatrix(matrix)
-	solved := solve(matrix, 0, 0)
+
+	printMatrix(matrix, "Initial Matrix")
+
+	// Solve the game and calculate the time it took
+	startTime := time.Now()
+	solved := solve(matrix)
+	elapsed := time.Now().Sub(startTime).Nanoseconds()
+	elapsed = elapsed / 1000000
+	fmt.Printf("Time: %d ms\n", elapsed)
+
+	// If the game does not have a solution, print that
 	if solved == false {
 		fmt.Printf("No solution.\n")
 	}
+
 }
 
-func solve(matrix [9][9]int, curRow int, curCol int) bool {
-	emptyRow, emptyCol := findEmptyCell(matrix, curRow, curCol)
+/**
+Description: This is the most important function: it takes a matrix and tries to fill it
+				in recursively, while checking if each move is valid.
+Arguments:
+			- matrix: a 9 x 9 integer matrix, or game board.
+Returns: This function returns the boolean value true if the Suduko game was solved
+			and false if it was not.
+*/
+func solve(matrix [9][9]int) bool {
+	// Find the next cell to try numbers at. If there are no cells left
+	// then we have solved the game.
+	emptyRow, emptyCol := findEmptyCell(matrix)
 	if emptyRow == -1 && emptyCol == -1 {
-		fmt.Printf("Solved:\n")
-		printMatrix(matrix)
+		printMatrix(matrix, "Solved")
 		return true
 	}
 
+	// Place numbers at the current empty cell, and recursively call
+	// the solve function. If the number didn't work, put it back to
+	// empty.
 	var i int
 	for i = 1; i <= 9; i++ {
 		if canPlaceNumber(matrix, emptyRow, emptyCol, i) {
 			matrix[emptyRow][emptyCol] = i
-			if solve(matrix, emptyRow, emptyCol) {
+			if solve(matrix) {
 				return true
 			}
 			matrix[emptyRow][emptyCol] = 0
@@ -53,7 +83,20 @@ func solve(matrix [9][9]int, curRow int, curCol int) bool {
 	return false
 }
 
-func canPlaceNumber(matrix [9][9]int, row int, col int, number int) bool {
+/**
+Description: This function checks to make sure we can place a
+				certain number in a given cell, with regards
+				to the rules of Suduko
+Arguments:
+			- matrix: a 9 x 9 integer matrix, or game board
+			- row/col: the current cell we want to place a number in
+			- number: the number we want to place in the cell
+Returns: True if we are allowed to place the number there, false
+			otherwise.
+*/
+func canPlaceNumber(matrix [9][9]int, row, col, number int) bool {
+	// The three rules of Suduko define that a number 'x' can be
+	// the only 'x' in the that row, column, and 3 x 3 sub-grid.
 	canPlaceRow := canPlaceInRow(matrix, row, number)
 	canPlaceCol := canPlaceInCol(matrix, col, number)
 	canPlaceArea := canPlaceInArea(matrix, row, col, number)
@@ -64,7 +107,19 @@ func canPlaceNumber(matrix [9][9]int, row int, col int, number int) bool {
 	}
 }
 
+/**
+Description: This method checks if we can place a number in a
+				3 x 3 sub-grid.
+Arguments:
+			- matrix: a 9 x 9 integer matrix, or game board
+			- row/col: the cell we want to place the number in
+			- the number we want to put in the cell
+Returns: True if the 3 x 3 sub-grid that row/cell is in does
+			not already contain 'number', false if it does.
+*/
 func canPlaceInArea(matrix [9][9]int, row, col, number int) bool {
+	// The findAreaMinMax method returns the mins/maxes for the
+	// 3 x 3 sub-grid that row/col is in.
 	rowMin, rowMax, colMin, colMax := findAreaMinMax(row, col)
 	var i, j int
 	for i = rowMin; i < rowMax; i++ {
@@ -77,6 +132,14 @@ func canPlaceInArea(matrix [9][9]int, row, col, number int) bool {
 	return true
 }
 
+/**
+Description: This method finds the minimums and maximums
+				of the current 3 x 3 sub-grid given the
+				current row and col.
+Arguments:
+			- row/col: current cell
+Returns: Returns the rowMin, rowMax, colMin, and colMax
+*/
 func findAreaMinMax(row, col int) (int, int, int, int) {
 	if row < 3 {
 		if col < 3 {
@@ -105,6 +168,16 @@ func findAreaMinMax(row, col int) (int, int, int, int) {
 	}
 }
 
+/**
+Description: This method checks if we can place 'number'
+				in column 'col'.
+Arguments:
+			- matrix: a 9 x 9 integer matrix, or game board
+			- col: the column we want to put 'number' in
+			- number: the number we want to put in 'col'
+Returns: Returns false if 'number' is already in 'col', true
+			if 'number' is NOT in the column already.
+*/
 func canPlaceInCol(matrix [9][9]int, col, number int) bool {
 	var i int
 	for i = 0; i < 9; i++ {
@@ -115,6 +188,16 @@ func canPlaceInCol(matrix [9][9]int, col, number int) bool {
 	return true
 }
 
+/**
+Description: This method check sif we can place 'number'
+				in row 'row'.
+Arguments:
+			- matrix: a 9 x 9 integer matrix, or game board
+			- row: the row we want to put 'number' in
+			- number: the number we want to put in 'row'
+Returns: Return false if 'number' is already in 'row', true
+			if 'number' is NOT in the row already.
+*/
 func canPlaceInRow(matrix [9][9]int, row, number int) bool {
 	var i int
 	for i = 0; i < 9; i++ {
@@ -125,15 +208,30 @@ func canPlaceInRow(matrix [9][9]int, row, number int) bool {
 	return true
 }
 
-func findEmptyCell(matrix [9][9]int, row, col int) (int, int) {
-	i := row
-	j := col
+/**
+Description: Given a 9 x 9 matrix, this function finds the row and column
+				of the nearest empty cell, starting on the first row and
+				column.
+Arguments:
+			- matrix: a 9 x 9 integer matrix, or game board
+Returns: Returns a row/col if an empty cell was found, otherwise -1,-1 is
+			returned.
+*/
+func findEmptyCell(matrix [9][9]int) (int, int) {
+	// We start at the first cell (upper-left-hand corner)
+	i := 0
+	j := 0
 	for {
+		// Only check if we are in the bounds of board
 		if i < 9 && j < 9 {
 			num := matrix[i][j]
+			// If we found an empty cell, return the current row/col
 			if num == 0 {
 				return i, j
 			} else {
+				// Increment the col we are checking. If we get past
+				// the end of the board, reset the col and increase
+				//the row counter by one.
 				j++
 				if j >= 9 {
 					i++
@@ -147,8 +245,15 @@ func findEmptyCell(matrix [9][9]int, row, col int) (int, int) {
 	return -1, -1
 }
 
-func printMatrix(matrix [9][9]int) {
-	fmt.Printf("Matrix:\n")
+/**
+Description: This function prints out a matrix.
+Arguments:
+			- matrix: a 9 x 9 integer matrix, or game board
+			- message: a message to print before printing the matrix
+Returns: Nothing.
+*/
+func printMatrix(matrix [9][9]int, message string) {
+	fmt.Printf("\n%s:\n", message)
 
 	var i, j int
 	for i = 0; i < 9; i++ {
@@ -161,6 +266,14 @@ func printMatrix(matrix [9][9]int) {
 	}
 }
 
+/**
+Description: This function reads in game file and creates
+				a 9 x 9 integer matrix from the read-in values.
+Arguments:
+			- fileName: the name of the file to read
+Returns: Returns a 9 x 9 integer matrix and an error. If the
+			error is nil, then the matrix was read in successfully.
+*/
 func readFile(fileName string) ([9][9]int, error) {
 	var matrix [9][9]int
 	var err error
@@ -195,7 +308,6 @@ func readFile(fileName string) ([9][9]int, error) {
 	}
 
 	file.Close()
-
 	if err := scanner.Err(); err != nil {
 		log.Fatal(err)
 	}
