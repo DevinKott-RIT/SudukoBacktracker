@@ -3,6 +3,7 @@ package main
 import "os"
 import (
 	"bufio"
+	"errors"
 	"fmt"
 	"log"
 	"strconv"
@@ -331,6 +332,11 @@ func readFile(fileName string) ([9][9]int, error) {
 		partsLength := len(parts)
 		for colIndex = 0; colIndex < partsLength; colIndex++ {
 			number, err = strconv.Atoi(parts[colIndex])
+			if number < 0 || number > 9 {
+				err = errors.New("invalid number read in. Numbers must be in the range [0, 9]")
+				file.Close()
+				return matrix, err
+			}
 			if err == nil {
 				matrix[rowIndex][colIndex] = number
 			} else {
