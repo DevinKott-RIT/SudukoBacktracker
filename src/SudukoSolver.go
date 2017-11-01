@@ -63,8 +63,12 @@ func solve(matrix [9][9]int) bool {
 	// then we have solved the game.
 	emptyRow, emptyCol := findEmptyCell(matrix)
 	if emptyRow == -1 && emptyCol == -1 {
-		printMatrix(matrix, "Solved")
-		return true
+		if checkSolution(matrix) {
+			printMatrix(matrix, "Solved")
+			return true
+		} else {
+			return false
+		}
 	}
 
 	// Place numbers at the current empty cell, and recursively call
@@ -81,6 +85,28 @@ func solve(matrix [9][9]int) bool {
 		}
 	}
 	return false
+}
+
+/**
+Description: This function checks the final soluction to make sure the game is
+				actually solved.
+Arguments:
+			- matrix: a 9 x 9 integer matrix, or game board
+Returns: True if the game is solved, false otherwise.
+*/
+func checkSolution(matrix [9][9]int) bool {
+	var row, col int
+	for row = 0; row < 9; row++ {
+		for col = 0; col < 9; col++ {
+			num := matrix[row][col]
+			if canPlaceInRow(matrix, row, num) && canPlaceInCol(matrix, col, num) && canPlaceInArea(matrix, row, col, num) {
+				continue
+			} else {
+				return false
+			}
+		}
+	}
+	return true
 }
 
 /**
