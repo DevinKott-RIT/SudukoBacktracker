@@ -89,22 +89,68 @@ func solve(matrix [9][9]int) bool {
 }
 
 /**
-Description: This function checks the final soluction to make sure the game is
+Description: This function checks the final solution to make sure the game is
 				actually solved.
 Arguments:
 			- matrix: a 9 x 9 integer matrix, or game board
 Returns: True if the game is solved, false otherwise.
 */
 func checkSolution(matrix [9][9]int) bool {
-	var row, col int
+	var i int
+	for i = 0; i < 9; i++ {
+		if !(rowIsUnique(matrix, i) && colIsUnique(matrix, i)) {
+			return false
+		}
+	}
+	return true
+}
+
+/**
+Description: This function checks to make sure a given row contains all unique values.
+Arguments:
+			- matrix: a 9 x 9 integer matrix, or game board
+			- row: the row to check
+Returns: True if the row is unique, false otherwise
+*/
+func rowIsUnique(matrix [9][9]int, row int) bool {
+	var line [9]bool
+	var col int
+	for col = 0; col < 9; col++ {
+		num := matrix[row][col]
+		line[num-1] = !line[num-1]
+	}
+	return booleansSame(line)
+}
+
+/**
+Description: This function checks to make sure a given col contains all unique values.
+Arguments:
+			- matrix: a 9 x 9 integer matrix, or game board
+			- col: the col to check
+Returns: True if the col is unique, false otherwise
+*/
+func colIsUnique(matrix [9][9]int, col int) bool {
+	var line [9]bool
+	var row int
 	for row = 0; row < 9; row++ {
-		for col = 0; col < 9; col++ {
-			num := matrix[row][col]
-			if canPlaceInRow(matrix, row, num) && canPlaceInCol(matrix, col, num) && canPlaceInArea(matrix, row, col, num) {
-				continue
-			} else {
-				return false
-			}
+		num := matrix[row][col]
+		line[num-1] = !line[num-1]
+	}
+	return booleansSame(line)
+}
+
+/**
+Description: This function verifies if a boolean array has a constant value
+Arguments:
+			- line: a boolean array containing 9 values
+Returns: True if the array is all true or all false, otherwise false
+*/
+func booleansSame(line [9]bool) bool {
+	var i int
+	value := line[0]
+	for i = 1; i < 9; i++ {
+		if line[i] != value {
+			return false
 		}
 	}
 	return true
