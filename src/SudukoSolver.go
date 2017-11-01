@@ -258,10 +258,18 @@ func printMatrix(matrix [9][9]int, message string) {
 	var i, j int
 	for i = 0; i < 9; i++ {
 		for j = 0; j < 9; j++ {
-			fmt.Printf("%d ", matrix[i][j])
+			fmt.Printf("%d", matrix[i][j])
+			if j == 2 || j == 5 {
+				fmt.Printf("\t")
+			} else {
+				fmt.Printf(" ")
+			}
 			if j == 8 {
 				fmt.Printf("\n")
 			}
+		}
+		if i == 2 || i == 5 {
+			fmt.Printf("\n")
 		}
 	}
 }
