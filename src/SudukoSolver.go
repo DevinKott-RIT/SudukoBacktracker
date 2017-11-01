@@ -334,19 +334,22 @@ func readFile(fileName string) ([9][9]int, error) {
 			number, err = strconv.Atoi(parts[colIndex])
 			if number < 0 || number > 9 {
 				err = errors.New("invalid number read in. Numbers must be in the range [0, 9]")
-				file.Close()
-				return matrix, err
+				goto errorWhileReading
 			}
 			if err == nil {
 				matrix[rowIndex][colIndex] = number
 			} else {
-				file.Close()
-				return matrix, err
+				goto errorWhileReading
 			}
 		}
 		rowIndex++
 	}
+	goto noError
+errorWhileReading:
+	file.Close()
+	return matrix, err
 
+noError:
 	file.Close()
 	if err := scanner.Err(); err != nil {
 		log.Fatal(err)
