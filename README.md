@@ -32,6 +32,7 @@ are the outputs of the 3 puzzles included in the repository:
 - [easy.txt](https://gist.github.com/DevinKott-RIT/abe7484dbae12111279675fdac64016a)
 - [hard.txt](https://gist.github.com/DevinKott-RIT/6d3cb753126d2e4cae912b2ecc1ade6f)
 - [input.txt](https://gist.github.com/DevinKott-RIT/50f1c64da8fd1b6d5dbb4a689aa7d735)
+- [easy_failure.txt](https://gist.github.com/DevinKott-RIT/98b021dfce1e46ff66bc021521d8e070)
 
 # Future
 
