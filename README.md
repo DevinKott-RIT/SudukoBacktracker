@@ -30,7 +30,7 @@ The output of the program (the solution, if there is one) is printed out to the 
 are the outputs of the 3 puzzles included in the repository:
 
 - [easy.txt](https://gist.github.com/DevinKott-RIT/abe7484dbae12111279675fdac64016a)
-- [hard.text](https://gist.github.com/DevinKott-RIT/6d3cb753126d2e4cae912b2ecc1ade6f)
+- [hard.txt](https://gist.github.com/DevinKott-RIT/6d3cb753126d2e4cae912b2ecc1ade6f)
 - [input.txt](https://gist.github.com/DevinKott-RIT/50f1c64da8fd1b6d5dbb4a689aa7d735)
 
 # Future
